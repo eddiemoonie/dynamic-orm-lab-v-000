@@ -2,7 +2,7 @@ require_relative "../config/environment.rb"
 require 'active_support/inflector'
 
 class InteractiveRecord
-  
+
   def self.table_name
     "#{self.to_s.downcase}s"
   end
@@ -59,5 +59,5 @@ class InteractiveRecord
     sql = "SELECT * FROM #{self.table_name} WHERE #{attribute.keys.first} = '#{formatted_value}'"
     DB[:conn].execute(sql)
   end
-  
+
 end
