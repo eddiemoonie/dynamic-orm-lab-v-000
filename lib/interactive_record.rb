@@ -3,12 +3,12 @@ require 'active_support/inflector'
 require 'pry'
 
 class InteractiveRecord
+
   def self.table_name
     "#{self.to_s.downcase}s"
   end
 
   def self.column_names
-
     sql = "pragma table_info('#{table_name}')"
 
     table_info = DB[:conn].execute(sql)
@@ -25,14 +25,12 @@ class InteractiveRecord
     end
   end
 
-  def save
-    sql = "INSERT INTO #{table_name_for_insert} (#{col_names_for_insert}) VALUES (#{values_for_insert})"
-    DB[:conn].execute(sql)
-    @id = DB[:conn].execute("SELECT last_insert_rowid() FROM #{table_name_for_insert}")[0][0]
-  end
-
   def table_name_for_insert
     self.class.table_name
+  end
+
+  def col_names_for_insert
+    self.class.column_names.delete_if {|col| col == "id"}.join(", ")
   end
 
   def values_for_insert
@@ -43,8 +41,10 @@ class InteractiveRecord
     values.join(", ")
   end
 
-  def col_names_for_insert
-    self.class.column_names.delete_if {|col| col == "id"}.join(", ")
+  def save
+    sql = "INSERT INTO #{table_name_for_insert} (#{col_names_for_insert}) VALUES (#{values_for_insert})"
+    DB[:conn].execute(sql)
+    @id = DB[:conn].execute("SELECT last_insert_rowid() FROM #{table_name_for_insert}")[0][0]
   end
 
   def self.find_by_name(name)
@@ -58,4 +58,5 @@ class InteractiveRecord
     sql = "SELECT * FROM #{self.table_name} WHERE #{attribute_hash.keys.first} = #{formatted_value}"
     DB[:conn].execute(sql)
   end
+
 end
