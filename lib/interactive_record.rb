@@ -1,5 +1,6 @@
 require_relative "../config/environment.rb"
 require 'active_support/inflector'
+require 'pry'
 
 class InteractiveRecord
 
@@ -56,6 +57,7 @@ class InteractiveRecord
     formatted_value = value.class == Fixnum ? value : "'#{value}'"
     sql = "SELECT * FROM #{self.table_name} WHERE #{attribute_hash.keys.first} = '#{formatted_value}'"
     DB[:conn].execute(sql)
+    binding.pry
   end
 
 end
